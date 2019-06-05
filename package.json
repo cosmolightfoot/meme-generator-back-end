@@ -10,7 +10,7 @@
     "start:watch": "nodemon server.js"
   },
   "jest": {
-    "test-enviroment": "node"
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "",
