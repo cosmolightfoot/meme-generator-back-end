@@ -2,15 +2,16 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../lib/app');
 const Meme = require('../../lib/models/Meme');
+const chance = require('chance')();
 
 
 describe('memes route tests', () => {
   const createMeme = () => {
     return Meme.create({
-      name: 'My cool meme',
-      imgUrl: 'http://somewhere.com',
-      topText: 'this is',
-      bottomText: 'a meme'
+      name: chance.name(),
+      imageUrl: chance.url(),
+      topText: chance.word(),
+      bottomText: chance.sentence()
     });
   };
 
@@ -32,7 +33,7 @@ describe('memes route tests', () => {
 
   it('can post a new meme', async () => {
     const newMeme = await request(app)
-      .post('/memes')
+      .post('/api/v1/memes')
       .send({
         name: 'cool new meme',
         imageUrl: 'http://mymeme.com',
@@ -40,7 +41,7 @@ describe('memes route tests', () => {
         bottomText: 'a meme'
       });
 
-      expect(newMeme).toEqual({
+      expect(newMeme.body).toEqual({
         name: 'cool new meme',
         imageUrl: 'http://mymeme.com',
         topText: 'this is',
@@ -48,5 +49,15 @@ describe('memes route tests', () => {
         _id: expect.any(String),
         __v: 0
       });
+  });
+
+  it('can get all memes by id', async () => {
+    createMeme();
+    createMeme();
+    
+    const getMemes = await request(app)
+      .get('/api/v1/memes');
+      
+    expect(getMemes.body).toHaveLength(2);
   });
 });
