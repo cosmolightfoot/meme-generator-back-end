@@ -51,9 +51,9 @@ describe('memes route tests', () => {
       });
   });
 
-  it('can get all memes by id', async () => {
-    createMeme();
-    createMeme();
+  it('can get all memes', async () => {
+    await createMeme();
+    await createMeme();
     
     const getMemes = await request(app)
       .get('/api/v1/memes');
@@ -61,7 +61,7 @@ describe('memes route tests', () => {
     expect(getMemes.body).toHaveLength(2);
   });
 
-  it('can get all memes by id', async () => {
+  it('can get a meme by id', async () => {
     const memeOne = await request(app)
       .post('/api/v1/memes')
       .send({
@@ -83,6 +83,43 @@ describe('memes route tests', () => {
     const getMemeOne = await request(app)
       .get(`/api/v1/memes/${memeOne.body._id}`);
 
-      expect(getMemeOne.body).toEqual(memeOne.body);
+      expect(getMemeOne.body).toEqual({
+        name: 'memeOne',
+        imageUrl: 'http://somewhere.com',
+        topText: 'top',
+        bottomText: 'bottom',
+        _id: memeOne.body._id
+      });
+  });
+
+  it('can get a meme by name', async () => {
+    const memeOne = await request(app)
+      .post('/api/v1/memes')
+      .send({
+        name: 'memeOne',
+        imageUrl: 'http://somewhere.com',
+        topText: 'top',
+        bottomText: 'bottom'
+      });
+    
+    const memeTwo = await request(app)
+      .post('/api/v1/memes')
+      .send({
+        name: 'memeTwo',
+        imageUrl: 'http://somehow.com',
+        topText: 'toptwo',
+        bottomText: 'bottomtwo'
+      });
+    
+    const getMemeOneByName = await request(app)
+      .get('/api/v1/memes?name=memeOne');
+
+      expect(getMemeOneByName.body).toEqual([{
+        name: 'memeOne',
+        imageUrl: 'http://somewhere.com',
+        topText: 'top',
+        bottomText: 'bottom',
+        _id: memeOne.body._id
+      }]);
   });
 });
