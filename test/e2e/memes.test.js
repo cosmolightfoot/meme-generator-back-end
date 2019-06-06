@@ -11,7 +11,7 @@ describe('memes route tests', () => {
       name: chance.name(),
       imageUrl: chance.url(),
       topText: chance.word(),
-      bottomText: chance.sentence()
+      bottomText: chance.word()
     });
   };
 
@@ -57,7 +57,32 @@ describe('memes route tests', () => {
     
     const getMemes = await request(app)
       .get('/api/v1/memes');
-      
+      console.log(getMemes.body);
     expect(getMemes.body).toHaveLength(2);
+  });
+
+  it('can get all memes by id', async () => {
+    const memeOne = await request(app)
+      .post('/api/v1/memes')
+      .send({
+        name: 'memeOne',
+        imageUrl: 'http://somewhere.com',
+        topText: 'top',
+        bottomText: 'bottom'
+      });
+    
+    const memeTwo = await request(app)
+      .post('/api/v1/memes')
+      .send({
+        name: 'memeTwo',
+        imageUrl: 'http://somehow.com',
+        topText: 'toptwo',
+        bottomText: 'bottomtwo'
+      });
+    
+    const getMemeOne = await request(app)
+      .get(`/api/v1/memes/${memeOne.body._id}`);
+
+      expect(getMemeOne.body).toEqual(memeOne.body);
   });
 });
